@@ -1,19 +1,9 @@
 <?php
 
-// declaring variables that will hold the info parsed from email
-$from = "";
-
-$subject = "";
-
-$to = "";
-
-$headers = "";
-
-$body = "";
-
-
-
 function mailParse($current_email){ 
+
+	$bodyContent = false;
+	$bodyString = false;
 
 	for($i = 0; $i < count($current_email); $i++){
 
@@ -21,16 +11,45 @@ function mailParse($current_email){
 
 			// logic that grabs corresponding header info
 			if(preg_match("/^From: (.*)/", $current_email[$i], $matches)){
-			  	echo $matches[0] . "\n";
+
+			  	echo $matches[1] . "\n"; 
+
+			}
+			else if(preg_match("/^To: (.*)/", $current_email[$i], $matches)){
+
+			  	echo $matches[1] . "\n"; 
+
+			}
+			else if(preg_match("/^Subject: (.*)/", $current_email[$i], $matches)){
+
+			  	echo $matches[1] . "\n"; 
+
+			}
+			else if(preg_match("/^Date: (.*)/", $current_email[$i], $matches)){
+
+			  	echo $matches[1] . "\n"; 
+
 			}
 
-		}else if(trim($current_email[$i] == "")){ 
+		}// end of if statement that checks for empty line
 
-		echo "empty line\n";
+		if(preg_match("/^Content-Transfer-Encoding: quoted-printable/", $current_email[$i], $matches) && $bodyContent == false){
+
+			$bodyContent = true;
 
 		}
-	}
+		else if($bodyContent == true && $bodyString == false && $current_email[$i] == ""){
 
+			$bodyString = true;
+
+		}
+		else if($bodyContent == true && $bodyString == true){
+
+			echo trim($current_email[$i]) . "\n";
+			$bodyContent = null;
+			
+		}
+	}
 };
 
 
